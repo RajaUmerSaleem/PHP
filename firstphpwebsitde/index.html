@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>My First PHP Website</h1>
+    <form id="dataForm" action="" method="POST">
+        <input type="hidden" name="id" id="userId">
+        <input type="text" name="name" id="userName" placeholder="Enter Name" required>
+        <input type="email" name="email" id="userEmail" placeholder="Enter Email" required>
+        <button type="submit" name="action" value="add">Add</button>
+        <button type="submit" name="action" value="update" style="display:none;">Update</button>
+    </form>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $server="localhost";
+            $username="root";
+            $password="";
+            $conn = new mysqli($server,$username, $password,"firstdb");
+
+            // Check connection
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $id = $_POST['id'];
+                $name = $_POST['name'];
+                $email = $_POST['email'];
+                $action = $_POST['action'];
+
+                if ($action == 'add') {
+                    $sql = "INSERT INTO users (Username, Email) VALUES ('$name', '$email')";
+                } elseif ($action == 'update') {
+                    $sql = "UPDATE users SET Username='$name', Email='$email' WHERE Id=$id";
+                }
+
+                if ($conn->query($sql) === TRUE) {
+                    header('Location: index.php');
+                } else {
+                    echo "Error: " . $sql . "<br>" . $conn->error;
+                }
+            }
+
+            // Handle delete request
+            if (isset($_GET['delete'])) {
+                $id = $_GET['delete'];
+                $sql = "DELETE FROM users WHERE Id=$id";
+                if ($conn->query($sql) === TRUE) {
+                    header('Location: index.php');
+                } else {
+                    echo "Error: " . $sql . "<br>" . $conn->error;
+                }
+            }
+
+            // Fetch data from the database
+            $sql = "SELECT * FROM users";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    echo "<tr>
+                            <td>{$row['Username']}</td>
+                            <td>{$row['Email']}</td>
+                            <td>
+                                <button onclick=\"editUser({$row['Id']}, '{$row['Username']}', '{$row['Email']}')\">Edit</button>
+                                <a href='index.php?delete={$row['Id']}'>Delete</a>
+                            </td>
+                          </tr>";
+                }
+            } else {
+                echo "<tr><td colspan='3'>No records found</td></tr>";
+            }
+
+            $conn->close();
+            ?>
+        </tbody>
+    </table>
+    <script src="script.js"></script>
+</body>
+</html>

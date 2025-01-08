@@ -1,4 +1,4 @@
-<?php
+<?php 
 $txt =' Raja Saab mubarak ho' ;
 $check=true;
 // txt data type checking
@@ -67,4 +67,28 @@ define("cars", [
 echo cars[0];
 echo cars[1];
 echo cars[2];
+ function myfunction($var)
+ {
+  echo ($var === 10 ? "10 function calling\n" : "Not 10 function calling\n");
+ }
+    $a = array(1, 2, 3, 10, 5);
+    array_walk($a, "myfunction");
+$fruits = array("Apple", "Banana", "Cherry");
+$fruits[] = "Orange";
+// print_r($fruits);
+$c=10;
+function globalTest(){
+    // 1
+    // global $c;
+    // echo $c;
+    // 2
+    // echo $GLOBALS['c'];
+    // 3
+    // $GLOBALS['c'] = 20;
+    // echo $GLOBALS['c'];
+}
+globalTest();
 ?>
+
+
+
